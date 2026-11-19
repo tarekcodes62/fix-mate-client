@@ -1,6 +1,26 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+/* FixMate Hero Slider */
+.fixmate-hero-slider .swiper-pagination {
+  bottom: 24px !important;
+}
+
+.fixmate-hero-slider .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+  opacity: 0.6;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.fixmate-hero-slider .swiper-pagination-bullet-active {
+  width: 26px;
+  border-radius: 10px;
+  opacity: 1;
+  background: #3b82f6;
+}
 
 @custom-variant dark (&:is(.dark *));
 
