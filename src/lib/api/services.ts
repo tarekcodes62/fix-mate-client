@@ -206,3 +206,24 @@ export const getMyServiceById = async (
 
   return result.data as Service;
 };
+
+// delete service
+export const deleteService = async (id: string, token: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to delete service');
+  }
+
+  return result;
+};

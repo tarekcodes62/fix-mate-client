@@ -47,7 +47,7 @@ export default function TechnicianDashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground mx-auto w-full max-w-7xl px-4 py-6">
       <div className="flex min-h-screen flex-col md:flex-row">
         {/* Sidebar */}
         <aside className="w-full border-b border-border bg-card p-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r">

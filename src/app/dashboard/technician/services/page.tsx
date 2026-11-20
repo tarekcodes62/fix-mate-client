@@ -2,10 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
-import { getMyServices, Service } from '@/lib/api/services';
+import { getMyServices, deleteService, Service } from '@/lib/api/services';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default function MyServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -35,6 +55,27 @@ export default function MyServicesPage() {
     fetchServices();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    try {
+      const { data } = await authClient.token();
+
+      if (!data?.token) {
+        toast.error('Please login again');
+        return;
+      }
+
+      await deleteService(id, data.token);
+
+      setServices(prev => prev.filter(service => service._id !== id));
+
+      toast.success('Service deleted successfully');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete service',
+      );
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -57,77 +98,132 @@ export default function MyServicesPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map(service => (
-            <div
-              key={service._id}
-              className="overflow-hidden rounded-xl border"
-            >
-              <Image
-                width={200}
-                height={200}
-                src={service.image}
-                alt={service.title}
-                className="h-48 w-full object-cover"
-              />
+        <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Duration</TableHead>
+                  <TableHead>Mode</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Availability</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
 
-              <div className="space-y-3 p-4">
-                <h2 className="text-lg font-semibold">{service.title}</h2>
+              <TableBody>
+                {services.map(service => (
+                  <TableRow key={service._id}>
+                    <TableCell>
+                      <div className="flex min-w-45 items-center gap-3">
+                        <Image
+                          width={48}
+                          height={48}
+                          src={service.image}
+                          alt={service.title}
+                          className="h-12 w-12 rounded-md object-cover"
+                        />
+                        <div>
+                          <p className="font-medium">{service.title}</p>
+                          {service.serviceArea && (
+                            <p className="text-xs text-muted-foreground">
+                              {service.serviceArea}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
 
-                <p className="text-sm text-muted-foreground">
-                  {service.category}
-                </p>
+                    <TableCell>{service.category}</TableCell>
 
-                <p className="line-clamp-2 text-sm">{service.description}</p>
+                    <TableCell className="font-medium">
+                      ৳{service.basePrice}
+                    </TableCell>
 
-                <div className="space-y-1 text-sm">
-                  <p>
-                    <span className="font-medium">Price:</span> ৳
-                    {service.basePrice}
-                  </p>
+                    <TableCell>{service.estimatedDuration}</TableCell>
 
-                  <p>
-                    <span className="font-medium">Duration:</span>{' '}
-                    {service.estimatedDuration}
-                  </p>
+                    <TableCell>{service.serviceMode}</TableCell>
 
-                  <p>
-                    <span className="font-medium">Mode:</span>{' '}
-                    {service.serviceMode}
-                  </p>
+                    <TableCell>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                          service.approvalStatus === 'approved'
+                            ? 'bg-green-100 text-green-700'
+                            : service.approvalStatus === 'rejected'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                        }`}
+                      >
+                        {service.approvalStatus}
+                      </span>
+                    </TableCell>
 
-                  {service.serviceArea && (
-                    <p>
-                      <span className="font-medium">Area:</span>{' '}
-                      {service.serviceArea}
-                    </p>
-                  )}
-                </div>
+                    <TableCell>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                          service.isAvailable
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {service.isAvailable ? 'Available' : 'Unavailable'}
+                      </span>
+                    </TableCell>
 
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                    {service.approvalStatus}
-                  </span>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          href={`/dashboard/technician/services/edit/${service._id}`}
+                          className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                        >
+                          Edit
+                        </Link>
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      service.isAvailable
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {service.isAvailable ? 'Available' : 'Unavailable'}
-                  </span>
-                  <Link
-                    href={`/dashboard/technician/services/edit/${service._id}`}
-                    className="block w-full rounded-md bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    Edit Service
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <button
+                              type="button"
+                              className="rounded-md border border-red-500 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          </AlertDialogTrigger>
+
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Delete this service?
+                              </AlertDialogTitle>
+
+                              <AlertDialogDescription>
+                                Are you sure you want to delete &quot;
+                                {service.title}&quot;? This action cannot be
+                                undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                              <AlertDialogAction
+                                onClick={() => handleDelete(service._id)}
+                                className="bg-red-600 text-white hover:bg-red-700"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       )}
     </div>
