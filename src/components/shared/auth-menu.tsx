@@ -3,25 +3,25 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard, LogOut, UserRound } from 'lucide-react';
-
 import { authClient } from '@/lib/auth-client';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 type User = {
   name: string;
   email: string;
   image?: string | null;
-  role?: string;
+  role?: string | null;
 };
 
 type Props = {
@@ -32,9 +32,18 @@ const AuthMenu = ({ user }: Props) => {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await authClient.signOut();
-    router.push('/');
-    router.refresh();
+    try {
+      await authClient.signOut();
+
+      toast.success('Signed out successfully');
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to sign out';
+
+      toast.error(message);
+    }
   };
 
   if (!user) {
@@ -49,7 +58,7 @@ const AuthMenu = ({ user }: Props) => {
 
         <Link
           href="/sign-up"
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+          className="rounded-md bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           Get Started
         </Link>
@@ -78,13 +87,15 @@ const AuthMenu = ({ user }: Props) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <p>{user.name}</p>
-          <p className="font-normal text-muted-foreground">{user.email}</p>
-          <p className="mt-1 text-xs capitalize text-emerald-600">
-            {user.role || 'customer'}
-          </p>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <p>{user.name}</p>
+            <p className="font-normal text-muted-foreground">{user.email}</p>
+            <p className="mt-1 text-xs capitalize text-emerald-600">
+              {user.role || 'customer'}
+            </p>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 

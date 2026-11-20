@@ -7,12 +7,14 @@ import { LayoutDashboard, LogOut, Menu, Wrench } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type User = {
   name: string;
   email: string;
   image?: string | null;
-  role?: string;
+  role?: string | null;
 };
 
 type Props = {
@@ -28,7 +30,7 @@ const navLinks = [
 
 const MobileMenu = ({ user }: Props) => {
   const [open, setOpen] = useState(false);
-
+  const router = useRouter();
   const dashboardLink =
     user?.role === 'admin'
       ? '/dashboard/admin'
@@ -39,8 +41,18 @@ const MobileMenu = ({ user }: Props) => {
   const closeMenu = () => setOpen(false);
 
   const handleSignOut = async () => {
-    await authClient.signOut();
-    window.location.href = '/';
+    try {
+      await authClient.signOut();
+
+      toast.success('Signed out successfully');
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to sign out';
+
+      toast.error(message);
+    }
   };
 
   return (
@@ -124,7 +136,7 @@ const MobileMenu = ({ user }: Props) => {
                 <Link
                   href="/sign-up"
                   onClick={closeMenu}
-                  className="rounded-md bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-emerald-700"
+                  className="rounded-md bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
                   Get Started
                 </Link>
