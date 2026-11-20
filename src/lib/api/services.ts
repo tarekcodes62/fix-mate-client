@@ -88,3 +88,24 @@ export const getServiceById = async (id: string): Promise<Service> => {
 
   return result.data as Service;
 };
+
+// Get technician's own services
+export const getMyServices = async (token: string): Promise<Service[]> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/my-services`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch my services');
+  }
+
+  const result = await response.json();
+
+  return result.data as Service[];
+};

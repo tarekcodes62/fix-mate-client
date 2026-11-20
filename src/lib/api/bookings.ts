@@ -91,3 +91,26 @@ export const cancelBooking = async (bookingId: string, token: string) => {
 
   return result;
 };
+
+// Get technician's own bookings
+export const getTechnicianBookings = async (
+  token: string,
+): Promise<Booking[]> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/technician`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch technician bookings');
+  }
+
+  const result = await response.json();
+
+  return result.data as Booking[];
+};
