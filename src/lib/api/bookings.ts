@@ -97,7 +97,7 @@ export const getTechnicianBookings = async (
   token: string,
 ): Promise<Booking[]> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/technician`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/technician-requests`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -106,11 +106,11 @@ export const getTechnicianBookings = async (
     },
   );
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch technician bookings');
-  }
-
   const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to fetch technician bookings');
+  }
 
   return result.data as Booking[];
 };

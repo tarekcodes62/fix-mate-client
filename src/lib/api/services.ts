@@ -109,3 +109,37 @@ export const getMyServices = async (token: string): Promise<Service[]> => {
 
   return result.data as Service[];
 };
+
+// create new service for technician
+export const createService = async (
+  data: Omit<
+    Service,
+    | '_id'
+    | 'technicianName'
+    | 'technicianEmail'
+    | 'approvalStatus'
+    | 'isAvailable'
+    | 'createdAt'
+  >,
+  token: string,
+) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to create service');
+  }
+
+  return result;
+};

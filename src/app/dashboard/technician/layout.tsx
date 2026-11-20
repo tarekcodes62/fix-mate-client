@@ -19,7 +19,7 @@ const menuItems = [
   },
   {
     label: 'Add New Service',
-    href: '/dashboard/technician/add-service',
+    href: '/dashboard/technician/services/new',
     icon: PlusCircle,
   },
   {
