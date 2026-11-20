@@ -7,11 +7,25 @@ import { CalendarDays, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { authClient } from '@/lib/auth-client';
-import { getMyBookings, type Booking } from '@/lib/api/bookings';
+import { cancelBooking, getMyBookings, type Booking } from '@/lib/api/bookings';
+
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const MyBookingsPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -37,6 +51,38 @@ const MyBookingsPage = () => {
 
     fetchBookings();
   }, []);
+
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      setCancellingId(bookingId);
+
+      const { data: tokenData, error } = await authClient.token();
+
+      if (error || !tokenData?.token) {
+        throw new Error('Authentication token not found');
+      }
+
+      await cancelBooking(bookingId, tokenData.token);
+
+      setBookings(prev =>
+        prev.map(booking =>
+          booking._id === bookingId
+            ? { ...booking, status: 'cancelled' }
+            : booking,
+        ),
+      );
+
+      toast.success('Booking cancelled successfully');
+    } catch (error) {
+      console.error('Cancel booking error:', error);
+
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to cancel booking',
+      );
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -168,6 +214,43 @@ const MyBookingsPage = () => {
                   <p className="mt-2 text-xs text-muted-foreground">
                     Payment: {booking.paymentStatus}
                   </p>
+
+                  {booking.status === 'requested' && (
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="mt-3"
+                          disabled={cancellingId === booking._id}
+                        >
+                          Cancel Booking
+                        </Button>
+                      </AlertDialogTrigger>
+
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+
+                          <AlertDialogDescription>
+                            Are you sure you want to cancel this booking? This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+
+                          <AlertDialogAction
+                            onClick={() => handleCancelBooking(booking._id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Yes, Cancel Booking
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
               </div>
             ))}

@@ -70,3 +70,24 @@ export const getMyBookings = async (token: string): Promise<Booking[]> => {
 
   return result.data as Booking[];
 };
+
+// cancel booking
+export const cancelBooking = async (bookingId: string, token: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${bookingId}/cancel`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to cancel booking');
+  }
+
+  return result;
+};
