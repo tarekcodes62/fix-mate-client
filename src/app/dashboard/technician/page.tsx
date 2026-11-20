@@ -75,6 +75,7 @@ const TechnicianPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Page Heading */}
       <div>
         <h1 className="text-2xl font-bold">Technician Overview</h1>
         <p className="text-muted-foreground">
@@ -82,6 +83,7 @@ const TechnicianPage = () => {
         </p>
       </div>
 
+      {/* Statistics Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {stats.map(stat => (
           <div key={stat.title} className="rounded-xl border bg-card p-5">
@@ -90,6 +92,55 @@ const TechnicianPage = () => {
             <h2 className="mt-2 text-3xl font-bold">{stat.value}</h2>
           </div>
         ))}
+      </div>
+
+      {/* Recent Booking Requests */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">Recent Booking Requests</h2>
+          <p className="text-sm text-muted-foreground">
+            Latest booking requests from your customers.
+          </p>
+        </div>
+
+        <div className="rounded-xl border bg-card">
+          {bookings.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              No booking requests found.
+            </div>
+          ) : (
+            <div className="divide-y">
+              {bookings.slice(0, 5).map(booking => (
+                <div
+                  key={booking._id}
+                  className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="space-y-1">
+                    <h3 className="font-medium">{booking.serviceTitle}</h3>
+
+                    <p className="text-sm text-muted-foreground">
+                      Customer: {booking.customerName}
+                    </p>
+
+                    <p className="text-sm text-muted-foreground">
+                      Date: {booking.preferredDate}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold">
+                      ৳{booking.finalAmount}
+                    </span>
+
+                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium capitalize text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                      {booking.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
