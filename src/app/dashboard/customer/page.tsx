@@ -144,7 +144,7 @@ export default function CustomerDashboardPage() {
           </div>
 
           <Link
-            href="/dashboard/customer/bookings"
+            href="/dashboard/customer/my-bookings"
             className="flex items-center gap-1 text-sm font-medium text-blue-600 transition hover:text-blue-700"
           >
             View All

@@ -12,7 +12,7 @@ const menuItems = [
   },
   {
     label: 'My Bookings',
-    href: '/dashboard/customer/bookings',
+    href: '/dashboard/customer/my-bookings',
     icon: CalendarDays,
   },
   {
