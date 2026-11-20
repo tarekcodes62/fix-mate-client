@@ -1,4 +1,5 @@
 import { getServiceById } from '@/lib/api/services';
+import RepairRequestDialog from '@/components/services/repair-request-dialog';
 import Link from 'next/link';
 import { ArrowLeft, Clock, MapPin, UserRound } from 'lucide-react';
 import Image from 'next/image';
@@ -19,9 +20,11 @@ const ServiceDetailsPage = async ({ params }: Props) => {
       <main className="flex min-h-[60vh] items-center justify-center bg-background px-4 text-foreground">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Service Not Found</h1>
+
           <p className="mt-2 text-muted-foreground">
             This service is unavailable or could not be found.
           </p>
+
           <Link
             href="/services"
             className="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
@@ -113,19 +116,18 @@ const ServiceDetailsPage = async ({ params }: Props) => {
               </div>
             </div>
 
-            {/* Price */}
+            {/* Price and Booking */}
             <div className="mt-8 rounded-xl border border-border bg-card p-5">
               <p className="text-sm text-muted-foreground">Starting Price</p>
+
               <p className="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">
                 ৳{service.basePrice}
               </p>
 
-              <Link
-                href={`/book-service/${service._id}`}
-                className="mt-5 flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
-              >
-                Book This Service
-              </Link>
+              <RepairRequestDialog
+                serviceId={service._id}
+                basePrice={service.basePrice}
+              />
             </div>
           </div>
         </div>
