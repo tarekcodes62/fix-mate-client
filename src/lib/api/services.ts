@@ -2,6 +2,7 @@ export type Service = {
   _id: string;
   title: string;
   category: string;
+  description: string;
   image: string;
   basePrice: number;
   estimatedDuration: string;
@@ -68,4 +69,22 @@ export const getServices = async (query: ServicesQuery = {}) => {
   const result = await response.json();
 
   return result.data as Service[];
+};
+
+// service details api
+export const getServiceById = async (id: string): Promise<Service> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`,
+    {
+      cache: 'no-store',
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch service details');
+  }
+
+  const result = await response.json();
+
+  return result.data as Service;
 };
