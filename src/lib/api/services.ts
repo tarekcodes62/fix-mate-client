@@ -143,3 +143,66 @@ export const createService = async (
 
   return result;
 };
+
+// update service
+export const updateService = async (
+  id: string,
+  data: Partial<
+    Pick<
+      Service,
+      | 'title'
+      | 'category'
+      | 'description'
+      | 'image'
+      | 'basePrice'
+      | 'estimatedDuration'
+      | 'serviceMode'
+      | 'serviceArea'
+    >
+  >,
+  token: string,
+) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to update service');
+  }
+
+  return result;
+};
+
+// get my service by id
+export const getMyServiceById = async (
+  id: string,
+  token: string,
+): Promise<Service> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/my-services/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to fetch my service');
+  }
+
+  return result.data as Service;
+};

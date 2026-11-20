@@ -142,6 +142,52 @@ const TechnicianPage = () => {
           )}
         </div>
       </div>
+      {/* My Services */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">My Services</h2>
+          <p className="text-sm text-muted-foreground">
+            Services you are currently offering.
+          </p>
+        </div>
+
+        <div className="rounded-xl border bg-card">
+          {services.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              You haven&apos;t added any services yet.
+            </div>
+          ) : (
+            <div className="divide-y">
+              {services.slice(0, 5).map(service => (
+                <div
+                  key={service._id}
+                  className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="space-y-1">
+                    <h3 className="font-medium">{service.title}</h3>
+
+                    <p className="text-sm text-muted-foreground">
+                      {service.category}
+                    </p>
+
+                    <p className="text-sm font-medium">৳{service.basePrice}</p>
+                  </div>
+
+                  <span
+                    className={`w-fit rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                      service.approvalStatus === 'approved'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
+                        : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
+                    }`}
+                  >
+                    {service.approvalStatus}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

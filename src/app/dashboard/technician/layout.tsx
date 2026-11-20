@@ -24,7 +24,7 @@ const menuItems = [
   },
   {
     label: 'My Services',
-    href: '/dashboard/technician/my-services',
+    href: '/dashboard/technician/services',
     icon: BriefcaseBusiness,
   },
   {
