@@ -29,6 +29,21 @@ export type AdminService = {
   technicianEmail: string;
   createdAt: string;
 };
+export type AdminTransaction = {
+  _id: string;
+  bookingId: string;
+  serviceTitle: string;
+  customerName: string;
+  customerEmail: string;
+  technicianName: string;
+  technicianEmail: string;
+  amount: number;
+  currency: string;
+  transactionId: string;
+  stripeSessionId: string;
+  paymentStatus: string;
+  paidAt: string;
+};
 
 // Get admin dashboard statistics
 export const getAdminStats = async (token: string) => {
@@ -164,4 +179,22 @@ export const getAllBookings = async (
   }
 
   return result.bookings;
+};
+
+// Get all transactions
+export const getAllTransactions = async (token: string) => {
+  const response = await fetch(`${API_URL}/api/admin/transactions`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to fetch transactions');
+  }
+
+  return result.transactions;
 };
