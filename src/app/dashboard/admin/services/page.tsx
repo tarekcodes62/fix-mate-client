@@ -131,7 +131,7 @@ const ManageServicesPage = () => {
                     </div>
                   </TableCell>
 
-                  <TableCell>৳{service.basePrice}</TableCell>
+                  <TableCell>${service.basePrice}</TableCell>
 
                   <TableCell>
                     <span

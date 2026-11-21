@@ -144,3 +144,29 @@ export const updateBookingStatus = async (
 
   return result;
 };
+
+// Create Stripe Checkout Session
+export const createCheckoutSession = async (
+  bookingId: string,
+  token: string,
+) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/payments/create-checkout-session`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ bookingId }),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to create checkout session');
+  }
+
+  return result.checkoutUrl as string;
+};

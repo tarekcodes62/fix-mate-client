@@ -178,7 +178,7 @@ export default function AdminBookingsPage() {
 
                   <TableCell>{booking.preferredDate}</TableCell>
 
-                  <TableCell>৳{booking.finalAmount}</TableCell>
+                  <TableCell>${booking.finalAmount}</TableCell>
 
                   <TableCell>
                     <span

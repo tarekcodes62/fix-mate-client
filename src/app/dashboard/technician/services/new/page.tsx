@@ -141,14 +141,14 @@ const TechnicianNewServicePage = () => {
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="basePrice" className="text-sm font-medium">
-              Base Price (৳)
+              Base Price ($)
             </label>
             <input
               id="basePrice"
               name="basePrice"
               type="number"
               min="1"
-              placeholder="1000"
+              placeholder="10"
               required
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:border-blue-600"
             />

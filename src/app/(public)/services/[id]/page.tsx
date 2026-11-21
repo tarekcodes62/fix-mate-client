@@ -121,7 +121,7 @@ const ServiceDetailsPage = async ({ params }: Props) => {
               <p className="text-sm text-muted-foreground">Starting Price</p>
 
               <p className="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">
-                ৳{service.basePrice}
+                ${service.basePrice.toFixed(2)} USD
               </p>
 
               <RepairRequestDialog

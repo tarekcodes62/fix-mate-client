@@ -136,7 +136,7 @@ const RepairRequestDialog = ({
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-500/20 dark:bg-blue-500/10">
           <p className="text-sm text-muted-foreground">Starting Price</p>
           <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
-            ৳{basePrice}
+            ${basePrice.toFixed(2)} USD
           </p>
         </div>
 

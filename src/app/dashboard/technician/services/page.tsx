@@ -275,7 +275,9 @@ export default function MyServicesPage() {
 
                     {/* Price */}
                     <TableCell>
-                      <div className="font-semibold">৳{service.basePrice}</div>
+                      <div className="font-semibold">
+                        ${service.basePrice.toFixed(2)} USD
+                      </div>
                     </TableCell>
 
                     {/* Duration */}

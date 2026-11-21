@@ -129,7 +129,7 @@ const TechnicianPage = () => {
 
                   <div className="flex items-center gap-3">
                     <span className="font-semibold">
-                      ৳{booking.finalAmount}
+                      ${booking.finalAmount.toFixed(2)} USD
                     </span>
 
                     <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium capitalize text-blue-700 dark:bg-blue-950 dark:text-blue-300">
@@ -170,7 +170,9 @@ const TechnicianPage = () => {
                       {service.category}
                     </p>
 
-                    <p className="text-sm font-medium">৳{service.basePrice}</p>
+                    <p className="text-sm font-medium">
+                      ${service.basePrice.toFixed(2)} USD
+                    </p>
                   </div>
 
                   <span

@@ -87,7 +87,7 @@ const FeaturedServices = async () => {
                         Starting from
                       </p>
                       <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                        ৳{service.basePrice}
+                        ${service.basePrice.toFixed(2)} USD
                       </p>
                     </div>
 

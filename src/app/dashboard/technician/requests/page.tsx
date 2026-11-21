@@ -209,7 +209,7 @@ export default function TechnicianRequestsPage() {
                         Base Price
                       </p>
                       <p className="mt-1 text-sm font-semibold">
-                        ৳{booking.basePrice}
+                        ${booking.basePrice.toFixed(2)} USD
                       </p>
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export default function TechnicianRequestsPage() {
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Final Amount (৳)
+                          Final Amount ($)
                         </label>
 
                         <Input

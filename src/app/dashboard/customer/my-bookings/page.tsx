@@ -7,7 +7,12 @@ import { CalendarDays, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { authClient } from '@/lib/auth-client';
-import { cancelBooking, getMyBookings, type Booking } from '@/lib/api/bookings';
+import {
+  cancelBooking,
+  createCheckoutSession,
+  getMyBookings,
+  type Booking,
+} from '@/lib/api/bookings';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +31,7 @@ const MyBookingsPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -84,6 +90,33 @@ const MyBookingsPage = () => {
     }
   };
 
+  const handlePayment = async (bookingId: string) => {
+    try {
+      setPayingId(bookingId);
+
+      const { data: tokenData, error } = await authClient.token();
+
+      if (error || !tokenData?.token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const checkoutUrl = await createCheckoutSession(
+        bookingId,
+        tokenData.token,
+      );
+
+      window.open(checkoutUrl, '_self');
+    } catch (error) {
+      console.error('Payment error:', error);
+
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to start payment',
+      );
+
+      setPayingId(null);
+    }
+  };
+
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'requested':
@@ -104,7 +137,6 @@ const MyBookingsPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
       <section>
         <h1 className="text-2xl font-bold sm:text-3xl">My Bookings</h1>
 
@@ -113,7 +145,6 @@ const MyBookingsPage = () => {
         </p>
       </section>
 
-      {/* Booking Count */}
       <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-5">
         <div className="rounded-lg bg-blue-600/10 p-3 text-blue-600">
           <ClipboardList size={24} />
@@ -128,7 +159,6 @@ const MyBookingsPage = () => {
         </div>
       </div>
 
-      {/* Booking List */}
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border p-5">
           <h2 className="text-lg font-semibold">All Bookings</h2>
@@ -199,7 +229,7 @@ const MyBookingsPage = () => {
                     </p>
 
                     <p className="mt-1 text-sm font-semibold">
-                      ৳{booking.finalAmount}
+                      ${booking.finalAmount.toFixed(2)} USD
                     </p>
                   </div>
                 </div>
@@ -214,6 +244,22 @@ const MyBookingsPage = () => {
                   <p className="mt-2 text-xs text-muted-foreground">
                     Payment: {booking.paymentStatus}
                   </p>
+
+                  {booking.status === 'completed' &&
+                    booking.paymentStatus === 'unpaid' && (
+                      <div>
+                        <Button
+                          size="sm"
+                          className="mt-3"
+                          disabled={payingId === booking._id}
+                          onClick={() => handlePayment(booking._id)}
+                        >
+                          {payingId === booking._id
+                            ? 'Redirecting...'
+                            : 'Pay Now'}
+                        </Button>
+                      </div>
+                    )}
 
                   {booking.status === 'requested' && (
                     <AlertDialog>

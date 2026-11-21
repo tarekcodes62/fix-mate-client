@@ -209,7 +209,7 @@ export default function CustomerDashboardPage() {
                   </span>
 
                   <span className="text-sm font-semibold">
-                    ${booking.finalAmount}
+                    ${booking.finalAmount.toFixed(2)} USD
                   </span>
                 </div>
               </div>
