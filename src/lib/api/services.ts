@@ -227,3 +227,30 @@ export const deleteService = async (id: string, token: string) => {
 
   return result;
 };
+
+// toggleServiceAvailability
+export const toggleServiceAvailability = async (
+  id: string,
+  isAvailable: boolean,
+  token: string,
+) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}/availability`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ isAvailable }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to update availability');
+  }
+
+  return data;
+};
