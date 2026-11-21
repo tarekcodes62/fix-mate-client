@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signIn, useSession } from '@/lib/auth-client';
+import { authClient, signIn, useSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { Loader2, Wrench } from 'lucide-react';
+import Image from 'next/image';
 
 const SignInPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,19 +27,29 @@ const SignInPage = () => {
     try {
       setLoading(true);
 
-      const result = await signIn.email({
+      const { error } = await signIn.email({
         email,
         password,
       });
 
-      if (result.error) {
-        toast.error(result.error.message || 'Invalid email or password');
+      if (error) {
+        toast.error(error.message || 'Invalid email or password');
         return;
       }
 
       toast.success('Login successful!');
-      router.push('/dashboard');
-      router.refresh();
+
+      const { data: session } = await authClient.getSession();
+
+      const role = session?.user?.role;
+
+      router.push(
+        role === 'technician'
+          ? '/dashboard/technician'
+          : role === 'admin'
+            ? '/dashboard/admin'
+            : '/dashboard/customer',
+      );
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
@@ -52,13 +63,21 @@ const SignInPage = () => {
 
       await signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard',
+        callbackURL: '/dashboard/customer',
       });
     } catch {
       toast.error('Google login failed. Please try again.');
       setLoading(false);
     }
   };
+
+  if (isPending || session?.user) {
+    return (
+      <main className="flex min-h-[80vh] items-center justify-center">
+        <Loader2 className="animate-spin text-blue-600" size={32} />
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-[80vh] items-center justify-center bg-background px-4 py-12 text-foreground">
@@ -69,6 +88,7 @@ const SignInPage = () => {
           </div>
 
           <h1 className="text-2xl font-bold">Welcome Back</h1>
+
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your FixMate account
           </p>
@@ -125,7 +145,9 @@ const SignInPage = () => {
           disabled={loading}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-border py-3 text-sm font-medium transition hover:bg-muted disabled:opacity-60"
         >
-          <img
+          <Image
+            width={50}
+            height={50}
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
             className="h-5 w-5"
