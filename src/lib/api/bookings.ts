@@ -170,3 +170,24 @@ export const createCheckoutSession = async (
 
   return result.checkoutUrl as string;
 };
+
+// Verify Stripe Payment
+export const verifyPayment = async (sessionId: string, token: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/payments/verify-session?session_id=${sessionId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Payment verification failed');
+  }
+
+  return result;
+};
