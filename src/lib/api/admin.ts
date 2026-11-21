@@ -59,3 +59,61 @@ export const updateUserRole = async (
 
   return result;
 };
+
+export type AdminService = {
+  _id: string;
+  title: string;
+  category: string;
+  basePrice: number;
+  approvalStatus: string;
+  technicianName: string;
+  technicianEmail: string;
+  createdAt: string;
+};
+
+// Get all services
+export const getAllServices = async (
+  token: string,
+  approvalStatus?: string,
+) => {
+  const query = approvalStatus ? `?approvalStatus=${approvalStatus}` : '';
+
+  const response = await fetch(`${API_URL}/api/admin/services${query}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to fetch services');
+  }
+
+  return result.services;
+};
+
+// Update service approval
+export const updateServiceApproval = async (
+  id: string,
+  approvalStatus: 'approved' | 'rejected',
+  token: string,
+) => {
+  const response = await fetch(`${API_URL}/api/admin/services/${id}/approval`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ approvalStatus }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to update service approval');
+  }
+
+  return result;
+};
