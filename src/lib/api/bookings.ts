@@ -114,3 +114,33 @@ export const getTechnicianBookings = async (
 
   return result.data as Booking[];
 };
+
+// Update booking status
+export const updateBookingStatus = async (
+  bookingId: string,
+  status: string,
+  token: string,
+  finalAmount?: number,
+) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${bookingId}/status`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(
+        status === 'completed' ? { status, finalAmount } : { status },
+      ),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to update booking status');
+  }
+
+  return result;
+};
