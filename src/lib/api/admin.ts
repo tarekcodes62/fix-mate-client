@@ -1,4 +1,34 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export type AdminBooking = {
+  _id: string;
+  serviceId: string;
+  serviceTitle: string;
+  serviceImage: string;
+  category: string;
+  basePrice: number;
+  technicianName: string;
+  technicianEmail: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  preferredDate: string;
+  problemDescription: string;
+  status: string;
+  finalAmount: number;
+  paymentStatus: string;
+  createdAt: string;
+};
+export type AdminService = {
+  _id: string;
+  title: string;
+  category: string;
+  basePrice: number;
+  approvalStatus: string;
+  technicianName: string;
+  technicianEmail: string;
+  createdAt: string;
+};
 
 // Get admin dashboard statistics
 export const getAdminStats = async (token: string) => {
@@ -60,17 +90,6 @@ export const updateUserRole = async (
   return result;
 };
 
-export type AdminService = {
-  _id: string;
-  title: string;
-  category: string;
-  basePrice: number;
-  approvalStatus: string;
-  technicianName: string;
-  technicianEmail: string;
-  createdAt: string;
-};
-
 // Get all services
 export const getAllServices = async (
   token: string,
@@ -116,4 +135,33 @@ export const updateServiceApproval = async (
   }
 
   return result;
+};
+
+// Get all bookings
+export const getAllBookings = async (
+  token: string,
+  status?: string,
+  paymentStatus?: string,
+) => {
+  const params = new URLSearchParams();
+
+  if (status) params.append('status', status);
+  if (paymentStatus) params.append('paymentStatus', paymentStatus);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+
+  const response = await fetch(`${API_URL}/api/admin/bookings${query}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to fetch bookings');
+  }
+
+  return result.bookings;
 };
