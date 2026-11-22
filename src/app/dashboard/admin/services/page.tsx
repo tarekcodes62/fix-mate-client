@@ -11,6 +11,17 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -25,6 +36,11 @@ const ManageServicesPage = () => {
   const [services, setServices] = useState<AdminService[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Reject confirmation state
+  const [selectedService, setSelectedService] = useState<AdminService | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -72,13 +88,27 @@ const ManageServicesPage = () => {
       );
 
       toast.success(`Service ${approvalStatus} successfully`);
+
+      return true;
     } catch (error) {
       console.error('Failed to update service:', error);
       toast.error(
         error instanceof Error ? error.message : 'Failed to update service',
       );
+
+      return false;
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!selectedService) return;
+
+    const success = await handleApproval(selectedService._id, 'rejected');
+
+    if (success) {
+      setSelectedService(null);
     }
   };
 
@@ -164,9 +194,7 @@ const ManageServicesPage = () => {
                           size="sm"
                           variant="destructive"
                           disabled={updatingId === service._id}
-                          onClick={() =>
-                            handleApproval(service._id, 'rejected')
-                          }
+                          onClick={() => setSelectedService(service)}
                         >
                           Reject
                         </Button>
@@ -183,6 +211,49 @@ const ManageServicesPage = () => {
           </Table>
         )}
       </div>
+
+      {/* Reject Confirmation Modal */}
+      <AlertDialog
+        open={!!selectedService}
+        onOpenChange={open => {
+          if (!open && !updatingId) {
+            setSelectedService(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject Service?</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Are you sure you want to reject{' '}
+              <span className="font-semibold text-foreground">
+                {selectedService?.title}
+              </span>
+              ? This action will update the service approval status to rejected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!updatingId}>
+              Cancel
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={event => {
+                event.preventDefault();
+                handleReject();
+              }}
+              disabled={!!updatingId}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {updatingId === selectedService?._id
+                ? 'Rejecting...'
+                : 'Yes, Reject'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
