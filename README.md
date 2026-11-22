@@ -8,7 +8,7 @@ entire platform.
 
 ## 🌐 Live Website
 
-**Live URL:** YOUR_FRONTEND_LIVE_URL
+**Live URL:** https://fix-mate-client-pi.vercel.app
 
 ## 🔐 Admin Credentials
 
